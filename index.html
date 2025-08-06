@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="hi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>पोस्टर मेकर</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css"
+    />
+
+    <script src="https://unpkg.com/@phosphor-icons/web@2.0.3"></script>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Yatra+One&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: "Poppins", "Yatra One", sans-serif;
+      }
+      .poster-container {
+        position: relative;
+        background-image: url("/1000867760.jpg");
+        background-size: cover;
+        background-position: center;
+        aspect-ratio: 4/5;
+        width: 100%;
+        overflow: hidden;
+      }
+      .poster-preview-wrapper {
+        border-radius: 0.75rem;
+        overflow: hidden;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+      #cropper-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+      }
+      .dark body {
+        background-color: #1a202c;
+        color: #e2e8f0;
+      }
+      .dark .card {
+        background-color: #2d3748;
+        color: #e2e8f0;
+      }
+      .dark .border-gray-300 {
+        border-color: #4a5568;
+      }
+      .dark .hover\:bg-gray-200:hover {
+        background-color: #4a5568;
+      }
+      .dark input {
+        background-color: #4a5568;
+        color: #e2e8f0;
+        border-color: #4a5568;
+      }
+      .dark input::placeholder {
+        color: #a0aec0;
+      }
+    </style>
+  </head>
+
+  <body class="bg-gray-100 text-gray-900 transition-colors duration-300">
+    <div
+      class="min-h-screen flex flex-col md:items-center md:justify-center p-4 md:p-8"
+    >
+      <header
+        class="w-full max-w-4xl flex justify-between items-center py-2 px-2"
+      >
+        <h1 class="text-3xl font-extrabold text-blue-600">
+          पोस्टर मेकर
+        </h1>
+        <button
+          id="theme-toggle"
+          class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+        >
+          <i class="ph-bold ph-moon text-2xl dark:ph-sun"></i>
+        </button>
+      </header>
+
+      <div
+        class="card bg-white p-2 rounded-3xl shadow-2xl w-full max-w-4xl flex flex-col md:flex-row gap-8 mb-8 transition-colors duration-300"
+      >
+        <div
+          class="posterPreviewContainer flex-shrink-0 w-full md:w-1/2 p-2 rounded-2xl bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800"
+        >
+          <div class="poster-preview-wrapper aspect-[4/5] relative">
+            <div id="poster-container" class="poster-container"> 
+                <img src="/1000867760.jpg" alt="">
+              <div
+                class="absolute bottom-[0%] right-[3%] flex w-[28%] aspect-[3/4] z-10"
+              >
+                <img
+                  id="user-photo"
+                  alt="User Photo"
+                  class="absolute inset-0 w-full h-full object-contain drop-shadow-lg object-bottom transition-opacity duration-500 opacity-0"
+               
+                />
+          
+                <div
+                  id="user-name"
+                  class="absolute bg-red-900 flex px-2 py-1 rounded-full h-6  w-[120%] justify-center items-center bottom-0 left-1/2 -translate-x-1/2  text-center text-sm text-white font-bold opacity-0 transition-opacity duration-500"
+                  style="font-family: 'Yatra One', system-ui"
+                >       </div>
+                  <span style="font-family: 'Yatra One', system-ui" class="user-name-text absolute bottom-2 font-light  flex  w-[120%] -translate-x-2 justify-center items-center  opacity-1 text-xs"
+                    ></span
+                  >
+         
+              
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="md:w-1/2 w-full flex flex-col gap-6 p-4">
+          <form id="upload-form" class="space-y-6">
+            <h2
+              class="text-2xl font-bold text-center mb-4 text-blue-600 dark:text-blue-400"
+            >
+              पोस्टर बनाएं
+            </h2>
+
+            <div>
+              <label for="photo-title" class="block mb-2 text-sm font-medium">
+                नाम (सिर्फ हिंदी में)
+              </label>
+              <input
+                type="text"
+                id="photo-title"
+                placeholder="अपना नाम लिखें"
+                required
+                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              />
+            </div>
+
+            <div>
+              <label for="photo-upload" class="block mb-2 text-sm font-medium">
+                फोटो अपलोड करें
+              </label>
+              <input
+                type="file"
+                id="photo-upload"
+                accept="image/jpeg, image/png, image/webp"
+                class="w-full text-sm file:mr-4 file:px-4 file:py-2 file:rounded-xl file:text-white file:bg-blue-500 hover:file:bg-blue-600 file:cursor-pointer transition-colors"
+              />
+            </div>
+
+            <button
+              type="submit"
+              class="w-full flex justify-center items-center px-4 py-3 bg-blue-500 text-white rounded-xl shadow-lg hover:bg-blue-600 transition-colors"
+            >
+              <i class="ph-bold ph-upload-simple text-xl mr-2"></i> अपलोड
+            </button>
+          </form>
+
+          <div id="action-buttons" class="grid grid-cols-2 gap-4 hidden ">
+            <button
+              id="crop-button"
+              class="flex justify-center items-center px-4 py-3 bg-gray-200 rounded-xl hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+            >
+              <i class="ph-bold ph-crop text-xl mr-2"></i> क्रॉप
+            </button>
+            <button
+              id="download-button"
+              class="flex justify-center items-center px-4 py-3 bg-emerald-500 text-white rounded-xl shadow-lg hover:bg-emerald-600 transition-colors"
+            >
+              <i class="ph-bold ph-download-simple text-xl mr-2"></i> डाउनलोड
+            </button>
+          </div>
+        </div>
+
+        <div
+          id="loading-modal-overlay"
+          class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 opacity-0 transition-opacity duration-300 pointer-events-none"
+        >
+          <div
+            class="bg-white p-8 rounded-xl shadow-xl flex flex-col items-center gap-4 dark:bg-gray-800 dark:text-white transform scale-95 transition-transform duration-300"
+          >
+            <div
+              class="animate-spin h-10 w-10 rounded-full border-4 border-blue-200 border-t-blue-500"
+            ></div>
+            <p id="loader-text" class="text-lg font-medium">Removing background...</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="cropper-modal-overlay" class="p-4">
+        <div
+          class="bg-gray-800 p-6 rounded-xl w-full max-w-3xl flex flex-col gap-6 shadow-2xl"
+        >
+          <h2 class="text-white text-2xl font-bold text-center">
+            फोटो क्रॉप करें (3:4)
+          </h2>
+          <div
+            class="flex-grow overflow-hidden flex items-center justify-center bg-gray-900 rounded-lg"
+          >
+            <img id="image-to-crop" class="max-h-full max-w-full object-contain" />
+          </div>
+          <div class="flex gap-4">
+            <button
+              id="cancel-crop"
+              class="w-1/2 flex justify-center items-center px-4 py-3 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors"
+            >
+              <i class="ph-bold ph-x-circle text-xl mr-2"></i> कैंसिल
+            </button>
+            <button
+              id="confirm-crop"
+              class="w-1/2 flex justify-center items-center px-4 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors"
+            >
+              <i class="ph-bold ph-check-circle text-xl mr-2"></i> कन्फर्म
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const uploadForm = document.getElementById("upload-form");
+        const photoTitleInput = document.getElementById("photo-title");
+        const posterContainer = document.getElementById("poster-container");
+        const userPhoto = document.getElementById("user-photo");
+        const userNamediv = document.getElementById("user-name");
+        let userNameText = document.querySelector(".user-name-text");
+        const loadingModal = document.getElementById("loading-modal-overlay");
+        const loaderText = document.getElementById("loader-text");
+        const cropperModal = document.getElementById("cropper-modal-overlay");
+        const imageToCrop = document.getElementById("image-to-crop");
+        const cropButton = document.getElementById("crop-button");
+        const confirmCrop = document.getElementById("confirm-crop");
+        const cancelCrop = document.getElementById("cancel-crop");
+        const downloadButton = document.getElementById("download-button");
+        const actionButtons = document.getElementById("action-buttons");
+let overtext_UserName = ""
+        let cropper, croppedImageBlob;
+
+
+        // Theme toggle
+        const themeToggle = document.getElementById("theme-toggle");
+        const prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+        if (prefersDark) {
+          document.documentElement.classList.add("dark");
+        }
+        themeToggle.addEventListener("click", () => {
+          document.documentElement.classList.toggle("dark");
+        });
+
+        // Utility functions
+        function isHindi(text) {
+          return /^[\u0900-\u097F\s]+$/.test(text);
+        }
+
+        function showLoader(message) {
+          loaderText.textContent = message;
+          loadingModal.classList.remove("opacity-0", "pointer-events-none");
+          loadingModal.classList.add("opacity-100");
+        }
+
+        function hideLoader() {
+          loadingModal.classList.remove("opacity-100");
+          loadingModal.classList.add("opacity-0", "pointer-events-none");
+        }
+
+        // Form submission handler
+        uploadForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const name = photoTitleInput.value;
+          const file = e.target[1].files[0];
+
+          if (!file) {
+            return alert("कृपया फोटो चुनें।");
+          }
+          if (!isHindi(name.trim())) {
+            return alert("नाम सिर्फ हिंदी में लिखें।");
+          }
+
+          const url = URL.createObjectURL(file);
+          imageToCrop.src = url;
+          cropperModal.style.display = "flex";
+        overtext_UserName = name;
+
+
+        });
+
+        // Cropper setup
+        imageToCrop.onload = () => {
+          if (cropper) cropper.destroy();
+          cropper = new Cropper(imageToCrop, {
+            aspectRatio: 3 / 4,
+            viewMode: 1,
+            dragMode: "move",
+            minCropBoxWidth: 100,
+            minCropBoxHeight: 133,
+          });
+        };
+
+        // API call to remove.bg
+        async function removeBackground(imageBlob) {
+          showLoader("Removing background with remove.bg...");
+
+          const formData = new FormData();
+          formData.append("image_file", imageBlob, "cropped_image.png");
+          formData.append("size", "preview");
+
+          const REMOVE_BG_API_URL = "https://api.remove.bg/v1.0/removebg";
+          const REMOVE_BG_API_KEY = "obEqk2W8gVNfoR94DMQDEZr7";
+
+          try {
+            const response = await fetch(REMOVE_BG_API_URL, {
+              method: "POST",
+              headers: {
+                "X-Api-Key": REMOVE_BG_API_KEY,
+                Accept: "application/json",
+              },
+              body: formData,
+            });
+
+            if (!response.ok) {
+              const errorText = await response.text();
+              throw new Error(
+                `API Error: ${response.status} - ${response.statusText}`
+              );
+            }
+
+            const resultBlob = await response.blob();
+            return resultBlob;
+          } catch (error) {
+            console.error("Background removal error:", error);
+            alert("Error: Could not remove the background. Please try again.");
+            return null;
+          } finally {
+            hideLoader();
+          }
+        }
+
+        // Confirm crop handler
+       confirmCrop.addEventListener("click", async () => {
+    if (!cropper) return;
+
+    cropperModal.style.display = "none";
+    uploadForm.classList.add("hidden");
+
+    const croppedCanvas = cropper.getCroppedCanvas({
+        width: 800,
+        height: 1067,
+    });
+
+    croppedCanvas.toBlob(async (blob) => {
+        if (blob) {
+            // Background removal process
+            const resultBlob = await removeBackground(blob);
+ userNameText.innerHTML = overtext_UserName
+            if (resultBlob) {
+                // Read the blob as a text, assuming it's a JSON string
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    try {
+                        // Parse the JSON string to get the base64 data
+                        const jsonResponse = JSON.parse(reader.result);
+                        
+                        // Extract the base64 string from the JSON object
+                        const base64Image = jsonResponse.data.result_b64;
+
+                        // Set the image source with the correct MIME type
+                        userPhoto.src = `data:image/png;base64,${base64Image}`;
+                        
+                        userPhoto.classList.remove("opacity-0");
+                        userNamediv.classList.remove("opacity-0");
+                       
+                        actionButtons.classList.remove("hidden");
+                    } catch (e) {
+                        console.error("Error parsing JSON or extracting image data:", e);
+                        alert("An error occurred while processing the image data.");
+                    }
+                };
+                reader.readAsText(resultBlob); // Read the blob as text
+            }
+        }
+    }, "image/png");
+});
+
+
+
+
+// Cancel crop handler
+        cancelCrop.addEventListener("click", () => {
+          if (cropper) cropper.destroy();
+          cropperModal.style.display = "none";
+          uploadForm.reset();
+        });
+
+        // Download poster handler
+        downloadButton.addEventListener("click", () => {
+          if (userPhoto.classList.contains("opacity-0")) {
+            alert("कृपया पहले फोटो अपलोड और क्रॉप करें।");
+            return;
+          }
+        // console.log(overtext_UserName)
+          // Use html2canvas to capture the poster preview
+          html2canvas(posterContainer, {
+            scale: window.devicePixelRatio > 2 ? 3 : 2,
+            useCORS: true,
+          }).then((canvas) => {
+            const link = document.createElement("a");
+            link.href = canvas.toDataURL("image/png");
+            link.download = `${photoTitleInput.value}_poster.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          });
+        });
+
+        // Allow re-cropping
+        cropButton.addEventListener("click", () => {
+          if (croppedImageBlob) {
+            imageToCrop.src = URL.createObjectURL(croppedImageBlob);
+            cropperModal.style.display = "flex";
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
